@@ -4,7 +4,9 @@ sealed class FileException implements Exception {
   const FileException({this.message});
 
   @override
-  String toString() => message ?? 'A file error has occured';
+  String toString() =>
+      message ??
+      'A file error has occured. Please ensure all input paths are valid';
 }
 
 class GeneralFileException extends FileException {

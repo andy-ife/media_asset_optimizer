@@ -81,10 +81,11 @@ class FileSystemClient {
   }
 
   bool isFile(String path) {
-    return fileExists(path);
+    return fileExists(path) &&
+        FileSystemEntity.typeSync(path) == FileSystemEntityType.file;
   }
 
-  void create(String path) {
+  void createFile(String path) {
     return File(path).createSync(recursive: true);
   }
 
@@ -125,20 +126,21 @@ class FileSystemClient {
   }
 
   bool isDirectory(String path) {
-    return directoryExists(path);
+    return directoryExists(path) &&
+        FileSystemEntity.typeSync(path) == FileSystemEntityType.directory;
+  }
+
+  void createDir(String path) {
+    return Directory(path).createSync(recursive: true);
   }
 
   String get currentDir => Directory.current.path;
 
-  Set<String> listFilesSync(String path) {
-    return Directory(path).listSync(recursive: true).map((e) => e.path).toSet();
-  }
-
-  List<String> getFilesRecursivelyRelative(String dirPath) {
-    final files = <String>[];
+  Set<String> getFilesRecursivelyRelative(String dirPath) {
+    final files = <String>{};
     if (!directoryExists(dirPath)) return files;
     try {
-      for (var entity in listFilesSync(dirPath)) {
+      for (var entity in _listFilesSync(dirPath)) {
         if (isFile(entity)) {
           files
               .add(p.relative(entity, from: projectRoot).replaceAll('\\', '/'));
@@ -148,6 +150,10 @@ class FileSystemClient {
       throw GeneralFileException(message: e.toString());
     }
     return files;
+  }
+
+  Set<String> _listFilesSync(String path) {
+    return Directory(path).listSync(recursive: true).map((e) => e.path).toSet();
   }
 }
 

@@ -1,10 +1,12 @@
 import 'package:media_asset_optimizer/src/app/analysis_printer.dart';
 import 'package:media_asset_optimizer/src/app/asset_compressor.dart';
 import 'package:media_asset_optimizer/src/app/asset_usage_scanner.dart';
+import 'package:media_asset_optimizer/src/io/compression_client.dart';
 import 'package:media_asset_optimizer/src/runner.dart';
 import 'package:media_asset_optimizer/src/io/file_system_client.dart';
 import 'package:media_asset_optimizer/src/app/cli.dart';
 import 'package:media_asset_optimizer/src/io/console.dart';
+import 'package:path/path.dart' as p;
 
 const test_asset_reference2 = 'test_pic2.jpg';
 const test_asset_reference3 = 'test_vid1.mp4';
@@ -51,6 +53,22 @@ class App {
         fs.exitApp(0);
       }
 
+      String? outputPath = cli.outputPath;
+      if (outputPath != null) {
+        final root = p.rootPrefix(outputPath);
+        if (root.isEmpty) {
+          // relative
+          final relative = p.relative(outputPath);
+          outputPath = p.join(fs.projectRoot, relative);
+          fs.createDir(outputPath);
+          cli.outputPath = outputPath;
+        } else {
+          console.printError(
+              'Please provide an output path relative to the project directory');
+          fs.exitApp(0);
+        }
+      }
+
       final Set<String> allAssets;
       if (cliMode == CliMode.compressFile) {
         // A single file does not need the whole project scanned.
@@ -69,10 +87,12 @@ class App {
           cliMode: cliMode,
           singleFile: cli.singleFile,
           compressor: AssetCompressor(
-            allAssets: allAssets,
-            fs: fs,
-            quality: cli.quality,
-          ),
+              allAssets: allAssets,
+              fs: fs,
+              client: CompressionClient(
+                quality: cli.quality,
+                outputPath: cli.outputPath,
+              )),
           printer: AnalysisPrinter(
             fs: fs,
           ));

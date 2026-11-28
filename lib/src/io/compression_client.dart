@@ -9,7 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:image_compression/image_compression.dart';
 
 class CompressionClient {
-  CompressionClient({FileSystemClient? fs, this.quality}) {
+  CompressionClient({FileSystemClient? fs, this.quality, this.outputPath}) {
     this.fs = fs ?? FileSystemClient();
     if (this.fs.isWindows) {
       mft = MfTranscoder(
@@ -32,6 +32,7 @@ class CompressionClient {
   ///
   /// Each media type keeps its own default when this is null.
   final int? quality;
+  final String? outputPath;
 
   AvTranscoder? avt;
   MfTranscoder? mft;
@@ -48,7 +49,11 @@ class CompressionClient {
         input: input, config: Configuration(jpgQuality: _imageQuality)));
 
     if (output.sizeInBytes < input.sizeInBytes) {
-      fs.writeAsBytes(path, output.rawBytes);
+      if (outputPath == null) {
+        fs.writeAsBytes(path, output.rawBytes);
+      } else {
+        fs.writeAsBytes(outputPath!, output.rawBytes);
+      }
       return (input.sizeInBytes - output.sizeInBytes).toDouble();
     } else {
       return 0;
@@ -56,9 +61,10 @@ class CompressionClient {
   }
 
   double compressVideoOrAudio(String path) {
-    final tempPath =
+    final tempPath = outputPath ??
         p.join(fs.projectRoot, '.dart_tool', '.temp', p.basename(path));
-    fs.create(tempPath);
+
+    if (!fs.directoryExists(tempPath)) fs.createDir(tempPath);
     final inputLength = fs.lengthSync(path);
 
     try {
@@ -93,7 +99,10 @@ class CompressionClient {
       final outputLength = fs.lengthSync(tempPath);
       if (outputLength < inputLength) {
         final outputBytes = fs.readAsBytes(tempPath);
-        fs.writeAsBytes(path, outputBytes);
+
+        // overwrite original if there is no outputPath
+        if (outputPath == null) fs.writeAsBytes(path, outputBytes);
+
         return (inputLength - outputLength).toDouble();
       } else {
         // untouched
@@ -102,7 +111,8 @@ class CompressionClient {
     } on Exception catch (e) {
       throw getTranscoderException(e, null, fs);
     } finally {
-      if (fs.fileExists(tempPath)) {
+      // delete tempFile if there is no outputPath
+      if (fs.fileExists(tempPath) && outputPath == null) {
         fs.deleteSync(tempPath);
       }
     }

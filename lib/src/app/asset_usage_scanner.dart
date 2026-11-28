@@ -93,7 +93,7 @@ class AssetUsageScanner {
             p.relative(declaration, from: fs.projectRoot).replaceAll('\\', '/');
       }
       if (fs.isDirectory(path)) {
-        assets.addAll(fs.listFilesSync(path));
+        assets.addAll(fs.getFilesRecursivelyRelative(path));
       } else {
         assets.add(path);
       }
@@ -107,7 +107,7 @@ class AssetUsageScanner {
     if (!fs.directoryExists(dir)) {
       return files;
     }
-    for (var entity in fs.listFilesSync(dir)) {
+    for (var entity in fs.getFilesRecursivelyRelative(dir)) {
       if (_shouldIgnore(dir)) continue;
       try {
         if (fs.isFile(entity)) {

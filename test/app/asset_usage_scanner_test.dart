@@ -46,16 +46,18 @@ void main() {
       stubPrintLoading<Set<String>>(mockConsole);
 
       final flutterAssets = sampleFlutterAssets;
-      when(() => fs.listFilesSync(p.join(SAMPLE_PROJECT_ROOT, ASSETS_DIR)))
+      when(() => fs.getFilesRecursivelyRelative(
+              p.join(SAMPLE_PROJECT_ROOT, ASSETS_DIR)))
           .thenAnswer((_) => flutterAssets);
 
       final androidAssets = sampleAndroidAssets;
-      when(() =>
-              fs.listFilesSync(p.join(SAMPLE_PROJECT_ROOT, ANDROID_ASSETS_DIR)))
+      when(() => fs.getFilesRecursivelyRelative(
+              p.join(SAMPLE_PROJECT_ROOT, ANDROID_ASSETS_DIR)))
           .thenAnswer((_) => androidAssets);
 
       final iosAssets = sampleIosAssets;
-      when(() => fs.listFilesSync(p.join(SAMPLE_PROJECT_ROOT, IOS_ASSETS_DIR)))
+      when(() => fs.getFilesRecursivelyRelative(
+              p.join(SAMPLE_PROJECT_ROOT, IOS_ASSETS_DIR)))
           .thenAnswer((_) => iosAssets);
 
       when(() => fs.readPubspec()).thenAnswer((_) => validPubspec);
@@ -97,16 +99,18 @@ void main() {
 
       // add ignoredDirs to all
       final flutterAssets = {...sampleFlutterAssets, ...SAMPLE_IGNORED_DIRS};
-      when(() => fs.listFilesSync(p.join(SAMPLE_PROJECT_ROOT, ASSETS_DIR)))
+      when(() => fs.getFilesRecursivelyRelative(
+              p.join(SAMPLE_PROJECT_ROOT, ASSETS_DIR)))
           .thenAnswer((_) => flutterAssets);
 
       final androidAssets = {...sampleAndroidAssets, ...SAMPLE_IGNORED_DIRS};
-      when(() =>
-              fs.listFilesSync(p.join(SAMPLE_PROJECT_ROOT, ANDROID_ASSETS_DIR)))
+      when(() => fs.getFilesRecursivelyRelative(
+              p.join(SAMPLE_PROJECT_ROOT, ANDROID_ASSETS_DIR)))
           .thenAnswer((_) => androidAssets);
 
       final iosAssets = {...sampleIosAssets, ...SAMPLE_IGNORED_DIRS};
-      when(() => fs.listFilesSync(p.join(SAMPLE_PROJECT_ROOT, IOS_ASSETS_DIR)))
+      when(() => fs.getFilesRecursivelyRelative(
+              p.join(SAMPLE_PROJECT_ROOT, IOS_ASSETS_DIR)))
           .thenAnswer((_) => iosAssets);
 
       when(() => fs.readPubspec()).thenAnswer((_) => validPubspec);
@@ -117,5 +121,9 @@ void main() {
 
       expect(allAssets, isNot(contains(allOf(SAMPLE_IGNORED_DIRS))));
     });
+
+    test('skips empty asset directories and subdirectories', () async {});
+
+    test('returned assets are files, not directories', () async {});
   });
 }

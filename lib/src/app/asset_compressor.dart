@@ -30,20 +30,13 @@ class AssetCompressor {
   AssetCompressor({
     required this.allAssets,
     required this.fs,
-    this.quality,
-    CompressionClient? client,
+    required this.client,
     Console? console,
-  }) : console = console ?? Console() {
-    this.client = client ?? CompressionClient(fs: fs, quality: quality);
-  }
+  }) : console = console ?? Console();
 
   final Set<String> allAssets;
   final FileSystemClient fs;
-
-  /// File quality from 1 (smallest file) to 100 (best quality).
-  final int? quality;
-
-  late final CompressionClient client;
+  final CompressionClient client;
   final Console console;
 
   CompressResult? _result;
