@@ -110,17 +110,17 @@ class Cli {
       this.quality = quality;
     }
 
+    final rawOutputPath = argResults[CliArgs.outputPath.name] as String?;
+    final outputPath = rawOutputPath?.trim();
+    if (outputPath != null && outputPath.isNotEmpty) {
+      this.outputPath = p.normalize(outputPath);
+    }
+
     final rawSingleFile = argResults[CliArgs.singleFile.name] as String?;
     final singleFile = rawSingleFile?.trim();
     if (singleFile != null && singleFile.isNotEmpty) {
       this.singleFile = singleFile;
       return CliMode.compressFile;
-    }
-
-    final rawOutputPath = argResults[CliArgs.outputPath.name] as String?;
-    final outputPath = rawOutputPath?.trim();
-    if (outputPath != null && outputPath.isNotEmpty) {
-      this.outputPath = p.normalize(outputPath);
     }
 
     final noModeSpecified = !compressAll && !compressSome && !dryRun;

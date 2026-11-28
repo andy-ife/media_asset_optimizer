@@ -45,3 +45,4 @@
 37. ~~Remove dart:io import from app.dart~~
 38. ~~Add topics, homepage, repository, issue_tracker to pubspec.yaml~~
 39. Test svgs
+40. Clean up App().start(). It is doing too much setup work

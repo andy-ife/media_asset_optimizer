@@ -52,7 +52,7 @@ class CompressionClient {
       if (outputPath == null) {
         fs.writeAsBytes(path, output.rawBytes);
       } else {
-        fs.writeAsBytes(outputPath!, output.rawBytes);
+        fs.writeAsBytes(p.join(outputPath!, p.basename(path)), output.rawBytes);
       }
       return (input.sizeInBytes - output.sizeInBytes).toDouble();
     } else {

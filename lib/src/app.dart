@@ -1,6 +1,7 @@
 import 'package:media_asset_optimizer/src/app/analysis_printer.dart';
 import 'package:media_asset_optimizer/src/app/asset_compressor.dart';
 import 'package:media_asset_optimizer/src/app/asset_usage_scanner.dart';
+import 'package:media_asset_optimizer/src/exception/file_exception.dart';
 import 'package:media_asset_optimizer/src/io/compression_client.dart';
 import 'package:media_asset_optimizer/src/runner.dart';
 import 'package:media_asset_optimizer/src/io/file_system_client.dart';
@@ -55,6 +56,9 @@ class App {
 
       String? outputPath = cli.outputPath;
       if (outputPath != null) {
+        if (!fs.isDirectory(outputPath)) {
+          throw IsAFileException(outputPath);
+        }
         final root = p.rootPrefix(outputPath);
         if (root.isEmpty) {
           // relative
@@ -63,9 +67,7 @@ class App {
           fs.createDir(outputPath);
           cli.outputPath = outputPath;
         } else {
-          console.printError(
-              'Please provide an output path relative to the project directory');
-          fs.exitApp(0);
+          throw NotRelativeToProjectRootException(outputPath);
         }
       }
 

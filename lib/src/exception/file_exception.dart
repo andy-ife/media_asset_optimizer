@@ -47,3 +47,19 @@ class FFmpegProcessException extends FileException {
   @override
   String toString() => '${message ?? 'Ffmpeg process error'}: $reason';
 }
+
+class IsAFileException extends FileException {
+  IsAFileException(this.path);
+  final String path;
+
+  @override
+  String toString() => '$path is a file. Directory is expected';
+}
+
+class NotRelativeToProjectRootException extends FileException {
+  NotRelativeToProjectRootException(this.path);
+  final String path;
+  @override
+  String toString() =>
+      'Error processing $path. Please provide an output path that is relative to the project root';
+}
