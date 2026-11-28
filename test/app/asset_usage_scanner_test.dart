@@ -120,9 +120,5 @@ void main() {
 
       expect(allAssets, isNot(contains(allOf(SAMPLE_IGNORED_DIRS))));
     });
-
-    test('skips empty asset directories and subdirectories', () async {});
-
-    test('returned assets are files, not directories', () async {});
   });
 }

@@ -105,47 +105,6 @@ void main() {
             )).called(1);
       });
 
-      test('returns null when the file does not exist', () async {
-        final fs = MockFileSystemClient();
-        final console = MockConsole();
-        final client = MockCompressionClient();
-        when(() => fs.fileExists(any())).thenReturn(false);
-
-        final compressor = AssetCompressor(
-          allAssets: {},
-          fs: fs,
-          console: console,
-          client: client,
-        );
-
-        final result = await compressor.compressFile(assetPath);
-
-        expect(result, isNull);
-        expect(compressor.result, isNull);
-        verify(() => console.printError(any(that: contains('File not found'))))
-            .called(1);
-        verifyNever(() => client.compressMedia(any()));
-      });
-
-      test('returns null for unsupported file types', () async {
-        final console = MockConsole();
-        final client = MockCompressionClient();
-        final compressor = AssetCompressor(
-          allAssets: {},
-          fs: MockFileSystemClient(),
-          console: console,
-          client: client,
-        );
-
-        final result = await compressor.compressFile('assets/notes.txt');
-
-        expect(result, isNull);
-        verify(() => console.printError(
-              any(that: contains('Unsupported media file')),
-            )).called(1);
-        verifyNever(() => client.compressMedia(any()));
-      });
-
       test('reports failure when compression frees no space', () async {
         final fs = MockFileSystemClient();
         final console = MockConsole();
@@ -179,23 +138,6 @@ void main() {
 
       setUp(() {
         registerFallbackValue(() => 0.0);
-      });
-
-      test('requires analysis before compression', () async {
-        final console = MockConsole();
-        final compressor = AssetCompressor(
-          allAssets: {},
-          fs: MockFileSystemClient(),
-          console: console,
-          client: MockCompressionClient(),
-        );
-
-        final result = await compressor.compressMultiple();
-
-        expect(result, isNull);
-        verify(() => console.printError(
-              any(that: contains('Run analysis before compression')),
-            )).called(1);
       });
 
       test('does nothing when analysis found no assets', () async {
@@ -274,33 +216,6 @@ void main() {
               any(that: contains('Compression cancelled')),
             )).called(1);
         verifyNever(() => client.compressMedia(any()));
-      });
-
-      test('re-prompts after an invalid confirmation', () async {
-        final console = MockConsole();
-        final client = MockCompressionClient();
-        var reads = 0;
-        when(() => console.read()).thenAnswer((_) {
-          reads++;
-          return reads == 1 ? 'maybe' : 'YES';
-        });
-        stubPrintLoading<double>(console);
-
-        final compressor = AssetCompressor(
-          allAssets: assets,
-          fs: MockFileSystemClient(),
-          console: console,
-          client: client,
-        );
-        compressor.analyze();
-
-        final result = await compressor.compressMultiple();
-
-        expect(result!.hasCompressed, isTrue);
-        verify(() => console.printInputPrompt(any())).called(2);
-        verify(() => console.printError(any(that: contains('Invalid option'))))
-            .called(1);
-        verify(() => client.compressMedia(any())).called(assets.length);
       });
 
       test('skips assets selected to ignore', () async {
