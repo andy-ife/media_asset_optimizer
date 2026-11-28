@@ -89,8 +89,7 @@ class AssetUsageScanner {
     for (var declaration in assetLines) {
       String path = declaration;
       if (declaration.contains(fs.projectRoot)) {
-        path =
-            p.relative(declaration, from: fs.projectRoot).replaceAll('\\', '/');
+        path = p.relative(declaration, from: fs.projectRoot);
       }
       if (fs.isDirectory(path)) {
         assets.addAll(fs.getFilesRecursivelyRelative(path));
@@ -112,8 +111,7 @@ class AssetUsageScanner {
       try {
         if (fs.isFile(entity)) {
           if (!p.basename(entity).startsWith('.')) {
-            files.add(
-                p.relative(entity, from: fs.projectRoot).replaceAll('\\', '/'));
+            files.add(p.relative(entity, from: fs.projectRoot));
           }
         }
       } catch (e) {
@@ -136,10 +134,10 @@ class AssetUsageScanner {
   }
 
   bool _shouldIgnore(String path) {
-    final filePath = path.replaceAll('\\', '/');
-    final rootPath = fs.projectRoot.replaceAll('\\', '/');
+    final filePath = path;
+    final rootPath = fs.projectRoot;
     return fs.ignoredDirs.any((dir) {
-      final ignoredPath = p.join(rootPath, dir).replaceAll('\\', '/');
+      final ignoredPath = p.join(rootPath, dir);
       return filePath.contains(ignoredPath);
     });
   }

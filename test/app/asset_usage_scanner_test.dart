@@ -22,8 +22,7 @@ void main() {
       expect(
           assets,
           samplePubspecAssets
-              .map((e) =>
-                  p.relative(e, from: fs.projectRoot).replaceAll('\\', '/'))
+              .map((e) => p.relative(e, from: fs.projectRoot))
               .toSet());
     });
 

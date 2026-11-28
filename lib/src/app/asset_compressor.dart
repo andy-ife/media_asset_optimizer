@@ -137,7 +137,7 @@ class AssetCompressor {
   String _normalizeAssetPath(String assetPath) {
     final absolutePath =
         p.isAbsolute(assetPath) ? assetPath : p.join(fs.projectRoot, assetPath);
-    return p.relative(absolutePath, from: fs.projectRoot).replaceAll('\\', '/');
+    return p.relative(absolutePath, from: fs.projectRoot);
   }
 
   Future<CompressResult?> compressMultiple(
