@@ -114,7 +114,7 @@ class FileSystemClient {
   }
 
   void deleteSync(String path) {
-    return File(path).deleteSync();
+    return File(path).deleteSync(recursive: true);
   }
 
   // ============

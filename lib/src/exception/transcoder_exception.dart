@@ -136,6 +136,13 @@ class OutOfMemoryException extends TranscoderException {
   String toString() => 'Out of memory while running ffmpeg: $osCode';
 }
 
+class IsADirectoryException extends TranscoderException {
+  const IsADirectoryException(super.osCode);
+  @override
+  String toString() =>
+      'Sorry. We tried reading/writing from a directory instead of a file. Please ensure all file paths are valid';
+}
+
 TranscoderException getTranscoderException(
     dynamic code, int? osCode, FileSystemClient fs) {
   if (code is Exception) {
@@ -228,6 +235,9 @@ TranscoderException getTranscoderException(
           break;
         case 234:
           error = FfmpegTranscodingFailedException(osCode);
+          break;
+        case 235:
+          error = IsADirectoryException(osCode);
           break;
         default:
           error = UnexpectedException(osCode);

@@ -61,13 +61,14 @@ class CompressionClient {
   }
 
   double compressVideoOrAudio(String path) {
-    final tempPath = outputPath ??
-        p.join(fs.projectRoot, '.dart_tool', '.temp', p.basename(path));
-
-    if (!fs.directoryExists(tempPath)) fs.createDir(tempPath);
-    final inputLength = fs.lengthSync(path);
+    final tempPath = outputPath == null
+        ? p.join(fs.projectRoot, '.dart_tool', '.temp', p.basename(path))
+        : p.join(outputPath!, p.basename(path));
 
     try {
+      if (!fs.fileExists(tempPath)) fs.createFile(tempPath);
+      final inputLength = fs.lengthSync(path);
+
       final result = fs.isWindows
           ? mft!.transcode(
               inputPath: path,
